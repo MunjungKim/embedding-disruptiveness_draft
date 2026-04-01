@@ -4,13 +4,13 @@ A Python package and workflow for measuring how disruptive a paper or patent is,
 
 This repository trains node2vec-style embeddings from citation graphs and computes an *Embedding Disruptiveness Measure (EDM)* that captures whether a work disrupts or consolidates its field. It also provides the classic *Disruption Index (DI)* as a built-in utility.
 
-[**Paper**](https://arxiv.org/abs/2502.16845) | [**Blog Post**](https://munjungkim.github.io/embedding-disruptiveness-blog/)
+[**Paper**](https://doi.org/10.1126/sciadv.adx3420) | [**Blog Post**](https://munjungkim.github.io/embedding-disruptiveness-blog/)
 
 ---
 
 ## Table of Contents
 
-- [pip Package](#pip-package)
+- [How It Works](#how-it-works)
 - [Environment Setup](#environment-setup)
 - [Input Format](#input-format)
 - [Usage with Snakemake](#usage-with-snakemake)
@@ -18,6 +18,7 @@ This repository trains node2vec-style embeddings from citation graphs and comput
   - [Step 1: Embedding Calculation](#step-1-embedding-calculation)
   - [Step 2: Distance Calculation](#step-2-distance-calculation)
   - [Step 3: Disruption Index](#step-3-disruption-index)
+- [pip Package](#pip-package)
 - [Project Structure](#project-structure)
 - [Authors](#authors)
 - [Citation](#citation)
@@ -25,16 +26,17 @@ This repository trains node2vec-style embeddings from citation graphs and comput
 
 ---
 
-## pip Package
+## How It Works
 
-We also provide a standalone pip package for computing the Embedding Disruptiveness Measure:
+<p align="center">
+  <img src="docs/figures/figure1_following_proof.png" width="800" alt="EDM schematics: (A) random walks, (B) directional skip-gram, (C) embedding space, (D) developing paper, (E) disruptive paper"/>
+</p>
 
-```bash
-pip install embedding-disruptiveness
-```
+1. **Random walks** traverse the citation graph, capturing both local and long-range structure (**A**).
+2. A **directional skip-gram** model learns two vectors per paper: a *future vector* (influence on descendants) and a *past vector* (what it builds upon) (**B**, **C**).
+3. The **cosine distance** between the two vectors is the Embedding Disruptiveness Measure — large gap means disruptive (**E**), small gap means consolidating (**D**).
 
-- **Source code**: [github.com/MunjungKim/embedding-disruptiveness](https://github.com/MunjungKim/embedding-disruptiveness)
-- **Example notebook**: [`notebooks/embedding-disruptiveness package.ipynb`](https://github.com/yy/embedding-disruptiveness/blob/main/notebooks/embedding-disruptiveness%20package.ipynb)
+For more details, see our [paper](https://doi.org/10.1126/sciadv.adx3420) and [blog post](https://munjungkim.github.io/embedding-disruptiveness-blog/).
 
 ---
 
@@ -163,6 +165,41 @@ python3 scripts/Distance_disruption.py multistep <ref_dict.pkl> <cit_dict.pkl> <
 
 ---
 
+## pip Package
+
+If you just want to compute EDM or the disruption index without the full workflow, we also provide a standalone pip package:
+
+```bash
+pip install embedding-disruptiveness
+```
+
+```python
+import embedding_disruptiveness as edm
+
+# Train embeddings
+trainer = edm.EmbeddingTrainer(
+    net_input="citation_network.npz",
+    dim=128,
+    window_size=5,
+    device_in="0",
+    device_out="1",
+    q_value=1,
+    epochs=5,
+    batch_size=1024,
+    save_dir="./output",
+)
+trainer.train()
+
+# Or compute the classic disruption index directly
+di = edm.calc_disruption_index(net)
+di_2step = edm.calc_multistep_disruption_index(net)
+```
+
+- **Source code**: [github.com/MunjungKim/embedding-disruptiveness](https://github.com/MunjungKim/embedding-disruptiveness)
+- **Example notebook**: [`notebooks/embedding-disruptiveness package.ipynb`](https://github.com/yy/embedding-disruptiveness/blob/main/notebooks/embedding-disruptiveness%20package.ipynb)
+
+---
+
 ## Project Structure
 
 ```
@@ -195,11 +232,12 @@ python3 scripts/Distance_disruption.py multistep <ref_dict.pkl> <cit_dict.pkl> <
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{kim2025uncovering,
+@article{kim2026uncovering,
   title={Uncovering simultaneous breakthroughs with a robust measure of disruptiveness},
   author={Kim, Munjung and Kojaku, Sadamori and Ahn, Yong-Yeol},
-  journal={arXiv preprint arXiv:2502.16845},
-  year={2025}
+  journal={Science Advances},
+  year={2026},
+  doi={10.1126/sciadv.adx3420}
 }
 ```
 
