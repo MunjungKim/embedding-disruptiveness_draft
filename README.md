@@ -29,7 +29,7 @@ This repository trains node2vec-style embeddings from citation graphs and comput
 ## How It Works
 
 <p align="center">
-  <img src="docs/figures/figure1_following_proof.png" width="800" alt="EDM schematics: (A) random walks, (B) directional skip-gram, (C) embedding space, (D) developing paper, (E) disruptive paper"/>
+  <img src="docs/figures/figure1_following_proof.jpg" width="800" alt="EDM schematics: (A) random walks, (B) directional skip-gram, (C) embedding space, (D) developing paper, (E) disruptive paper"/>
 </p>
 
 1. **Random walks** traverse the citation graph, capturing both local and long-range structure (**A**).
@@ -45,9 +45,8 @@ For more details, see our [paper](https://doi.org/10.1126/sciadv.adx3420) and [b
 ### Using uv (recommended)
 
 ```bash
-uv venv
+uv sync
 source .venv/bin/activate
-uv pip install -r requirements.txt
 ```
 
 ### Using pip
@@ -55,7 +54,8 @@ uv pip install -r requirements.txt
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e ./libs/util -e ./libs/node2vec
+pip install -e .
 ```
 
 ---
@@ -215,7 +215,8 @@ di_2step = edm.calc_multistep_disruption_index(net)
 │   ├── node2vec/              # Node2Vec implementation (models, loss, datasets, random walks)
 │   └── util/                  # Utility functions (data loading, disruption calculation)
 ├── notebooks/                 # Example notebooks
-├── requirements.txt           # Python dependencies
+├── pyproject.toml             # Python dependencies and project metadata
+├── uv.lock                    # Locked dependency versions
 └── README.md
 ```
 
