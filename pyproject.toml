@@ -5,7 +5,7 @@ description = "Embedding disruptiveness measure for citation networks"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-    { name = "Munjung Kim", email = "munjkim@iu.edu" },
+    { name = "Munjung Kim", email = "munjkim@virginia.edu" },
 ]
 license = { text = "MIT" }
 dependencies = [
